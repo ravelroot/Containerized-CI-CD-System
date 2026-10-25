@@ -269,10 +269,6 @@ Os testes usam SQLite em memória e um runtime falso, então rodam sem Docker. C
 
 O [CI](.github/workflows/ci.yml) roda tudo em PHP 8.2, 8.3 e 8.4, migra um PostgreSQL 16 de verdade e constrói a imagem Docker. O Dependabot acompanha Composer, Actions e a imagem base.
 
-### Commit automático diário
-
-O workflow [`diario.yml`](.github/workflows/diario.yml) registra cinco atividades por dia em `.github/atividade.txt`, às **08:13, 10:47, 13:29, 16:11 e 19:37** (Brasília). Como o GitHub pode atrasar ou pular execuções agendadas, há duas execuções de reserva (21:58 e 23:21): cada uma grava o primeiro horário do dia que já passou e ainda não foi registrado, então os cinco commits saem mesmo se duas execuções se perderem, e nunca saem repetidos. Para ativar, crie os secrets `GIT_NAME` e `GIT_EMAIL` em *Settings → Secrets and variables → Actions* (use o e-mail `noreply` da sua conta para os commits contarem no seu perfil). O CI ignora esse arquivo.
-
 ## Licença
 
 [MIT](LICENSE). Use, copie, altere e distribua à vontade. As fontes [Instrument Sans](https://fonts.google.com/specimen/Instrument+Sans), [Bricolage Grotesque](https://fonts.google.com/specimen/Bricolage+Grotesque) e [IBM Plex Mono](https://www.ibm.com/plex/) da interface vêm do [Fontsource](https://fontsource.org/) e são distribuídas sob a SIL Open Font License 1.1.
