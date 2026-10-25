@@ -159,7 +159,7 @@ final class Cli
             $this->line(sprintf('  %s %-28s %s', $pass ? '✔' : '✖', $label, $detail));
         };
         $this->line('Vau ' . App::VERSION . ' · diagnóstico');
-        $check('PHP 8.2+', PHP_VERSION_ID >= 80200, PHP_VERSION);
+        $check('PHP 8.2+', version_compare(PHP_VERSION, '8.2.0', '>='), PHP_VERSION);
         foreach (['pdo', 'sodium', 'mbstring', 'json', 'curl'] as $ext) {
             $check("extensão {$ext}", extension_loaded($ext));
         }

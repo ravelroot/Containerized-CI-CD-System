@@ -8,7 +8,7 @@ declare(strict_types=1);
  * um carregador PSR-4 mínimo resolve o namespace Vau\ em src/.
  */
 
-if (PHP_VERSION_ID < 80200) {
+if (version_compare(PHP_VERSION, '8.2.0', '<')) {
     fwrite(STDERR, "O Vau precisa do PHP 8.2 ou mais recente.\n");
     exit(1);
 }
