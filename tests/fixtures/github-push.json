@@ -1,0 +1,15 @@
+{
+  "ref": "refs/heads/main",
+  "before": "6113728f27ae82c7b1a177c8d03f9e96e0adf246",
+  "after": "a10867b14bb761a232cd80139fbd4c0d33264240",
+  "deleted": false,
+  "compare": "https://github.com/acme/loja/compare/6113728f27ae...a10867b14bb7",
+  "repository": { "full_name": "acme/loja", "clone_url": "https://github.com/acme/loja.git" },
+  "pusher": { "name": "marina" },
+  "head_commit": {
+    "id": "a10867b14bb761a232cd80139fbd4c0d33264240",
+    "message": "Corrige cálculo do frete\n\nArredonda para cima.",
+    "url": "https://github.com/acme/loja/commit/a10867b14bb761a232cd80139fbd4c0d33264240",
+    "author": { "name": "Marina Costa", "username": "marinacosta" }
+  }
+}

@@ -1,0 +1,51 @@
+# Vau com PostgreSQL: painel em http://localhost:8080 e um worker com acesso ao Docker do host.
+# Suba com: docker compose up -d --build   ·   mais workers: docker compose up -d --scale worker=3
+services:
+  web:
+    build: .
+    image: vau:1.0.0
+    ports:
+      - "8080:80"
+    environment: &env
+      VAU_APP_URL: ${VAU_APP_URL:-http://localhost:8080}
+      VAU_DATABASE_URL: pgsql://vau:${POSTGRES_PASSWORD:-vau-local}@db:5432/vau
+      VAU_RUNTIME: docker
+      VAU_TIMEZONE: America/Sao_Paulo
+    volumes:
+      - vau-storage:/app/storage
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  worker:
+    image: vau:1.0.0
+    command: ["php", "bin/vau", "worker"]
+    environment: *env
+    volumes:
+      - vau-storage:/app/storage
+      - /var/run/docker.sock:/var/run/docker.sock
+    depends_on:
+      web:
+        condition: service_started
+    stop_grace_period: 2m
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    environment:
+      POSTGRES_DB: vau
+      POSTGRES_USER: vau
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:-vau-local}
+    volumes:
+      - vau-db:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U vau -d vau"]
+      interval: 5s
+      timeout: 3s
+      retries: 10
+    restart: unless-stopped
+
+volumes:
+  vau-storage:
+  vau-db:

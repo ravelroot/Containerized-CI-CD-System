@@ -1,0 +1,12 @@
+#!/usr/bin/env php
+<?php
+
+declare(strict_types=1);
+
+if (PHP_SAPI !== 'cli') {
+    exit(1);
+}
+
+$app = require dirname(__DIR__) . '/src/bootstrap.php';
+
+exit((new Vau\Console\Cli($app))->run($argv));

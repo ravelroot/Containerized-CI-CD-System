@@ -1,0 +1,91 @@
+name: CI
+
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - '.github/atividade.txt'
+  pull_request:
+  schedule:
+    - cron: '7 13 * * *'  # todo dia às 10:07 (Brasília)
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  testes:
+    name: PHP ${{ matrix.php }}
+    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        php: ['8.2', '8.3', '8.4']
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: ${{ matrix.php }}
+          extensions: pdo_sqlite, sodium, mbstring, curl, pcntl
+          coverage: none
+          tools: composer:v2
+      - name: Cache do Composer
+        uses: actions/cache@v4
+        with:
+          path: ~/.cache/composer
+          key: composer-${{ matrix.php }}-${{ hashFiles('composer.json') }}
+      - run: composer install --no-interaction --no-progress --prefer-dist
+      - name: Sintaxe
+        run: find src tests public templates -name '*.php' -print0 | xargs -0 -n1 php -l > /dev/null && php -l bin/vau
+      - name: Estilo (PER-CS 2.0)
+        if: matrix.php == '8.3'
+        run: composer lint
+      - name: Análise estática (PHPStan)
+        run: composer analyse
+      - name: Testes (PHPUnit)
+        run: composer test
+      - name: Fumaça da linha de comando
+        run: |
+          php bin/vau setup
+          php bin/vau doctor || true
+          php bin/vau schema:dump pgsql > /dev/null
+
+  postgres:
+    name: PostgreSQL 16
+    runs-on: ubuntu-24.04
+    services:
+      postgres:
+        image: postgres:16-alpine
+        env:
+          POSTGRES_DB: vau
+          POSTGRES_USER: vau
+          POSTGRES_PASSWORD: vau
+        ports: ['5432:5432']
+        options: >-
+          --health-cmd "pg_isready -U vau" --health-interval 5s --health-timeout 3s --health-retries 10
+    steps:
+      - uses: actions/checkout@v5
+      - uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.3'
+          extensions: pdo_pgsql, sodium, mbstring, curl
+      - name: Migrações e usuário admin no PostgreSQL
+        env:
+          VAU_DATABASE_URL: pgsql://vau:vau@127.0.0.1:5432/vau
+          VAU_RUNTIME: local
+        run: |
+          php bin/vau setup
+          php bin/vau migrate
+
+  docker:
+    name: Imagem Docker
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v5
+      - run: docker build -t vau:ci .
+      - name: Painel responde
+        run: |
+          docker run -d --name vau -p 8080:80 vau:ci
+          for i in $(seq 1 30); do curl -fsS http://127.0.0.1:8080/health && exit 0; sleep 2; done
+          docker logs vau; exit 1

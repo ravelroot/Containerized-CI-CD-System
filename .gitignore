@@ -1,0 +1,12 @@
+.env
+/vendor/
+/storage/*
+!/storage/.gitkeep
+.phpunit.cache/
+.phpstan.cache/
+.php-cs-fixer.cache
+*.log
+.DS_Store
+Thumbs.db
+.idea/
+.vscode/

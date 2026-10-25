@@ -1,0 +1,10 @@
+# Serviço Python com pytest; a etapa de integração só roda na main
+image: python:3.12-slim
+steps:
+  - name: Dependências
+    run: pip install --quiet -r requirements.txt -r requirements-dev.txt
+  - name: Testes
+    run: pytest -q
+  - name: Integração
+    branches: [main]
+    run: pytest -q -m integracao

@@ -1,0 +1,12 @@
+{
+  "action": "synchronize",
+  "number": 42,
+  "pull_request": {
+    "number": 42,
+    "title": "Novo checkout em uma página",
+    "html_url": "https://github.com/acme/loja/pull/42",
+    "user": { "login": "caio" },
+    "head": { "ref": "feature/checkout", "sha": "b20867b14bb761a232cd80139fbd4c0d33264240", "repo": { "full_name": "caio/loja" } },
+    "base": { "ref": "main", "repo": { "full_name": "acme/loja", "clone_url": "https://github.com/acme/loja.git" } }
+  }
+}

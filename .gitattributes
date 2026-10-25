@@ -1,0 +1,7 @@
+* text=auto eol=lf
+*.cmd text eol=crlf
+*.png binary
+*.pdf binary
+*.woff2 binary
+docs/** linguist-documentation
+exemplos/** linguist-documentation

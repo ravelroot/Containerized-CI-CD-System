@@ -1,0 +1,10 @@
+{
+  "ref": "refs/heads/main",
+  "after": "a10867b14bb761a232cd80139fbd4c0d33264240",
+  "repository": { "full_name": "sua-org/seu-repo", "clone_url": "https://github.com/sua-org/seu-repo.git" },
+  "head_commit": {
+    "id": "a10867b14bb761a232cd80139fbd4c0d33264240",
+    "message": "Teste manual do webhook",
+    "author": { "name": "Você", "username": "voce" }
+  }
+}

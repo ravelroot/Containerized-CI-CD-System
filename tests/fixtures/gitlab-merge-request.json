@@ -1,0 +1,16 @@
+{
+  "object_kind": "merge_request",
+  "user": { "username": "rafael" },
+  "project": { "git_http_url": "https://gitlab.com/acme/loja.git" },
+  "object_attributes": {
+    "iid": 7,
+    "action": "open",
+    "title": "Cupom de primeira compra",
+    "url": "https://gitlab.com/acme/loja/-/merge_requests/7",
+    "source_branch": "feature/cupom",
+    "source_project_id": 10,
+    "target_project_id": 10,
+    "last_commit": { "id": "c30867b14bb761a232cd80139fbd4c0d33264240", "author": { "name": "Rafael Lima" } },
+    "target": { "git_http_url": "https://gitlab.com/acme/loja.git" }
+  }
+}

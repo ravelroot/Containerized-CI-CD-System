@@ -1,0 +1,16 @@
+# Front-end ou API em Node.js
+image: node:22-alpine
+timeout: 15
+steps:
+  - name: Instalar
+    run: npm ci
+  - name: Lint
+    run: npm run lint
+    allow_failure: true
+  - name: Testes
+    run: npm test -- --ci
+  - name: Build
+    run: npm run build
+deploy:
+  branches: [main, "tag:v*"]
+  run: npx --yes wrangler pages deploy dist --project-name=site

@@ -1,0 +1,81 @@
+name: Atividade diária
+
+# Cinco registros por dia, em horários espalhados (Brasília):
+#   08:13 manhã · 10:47 fim da manhã · 13:29 início da tarde · 16:11 tarde · 19:37 noite
+# O GitHub pode atrasar ou pular execuções agendadas em horários de pico. Por isso
+# há duas execuções de reserva (21:58 e 23:21) e cada execução grava o primeiro
+# horário do dia que já passou e ainda não foi registrado. Assim os cinco commits
+# saem mesmo que duas execuções se percam, e nunca saem repetidos.
+
+on:
+  schedule:
+    - cron: "13 11 * * *"  # 08:13 (Brasília)
+    - cron: "47 13 * * *"  # 10:47
+    - cron: "29 16 * * *"  # 13:29
+    - cron: "11 19 * * *"  # 16:11
+    - cron: "37 22 * * *"  # 19:37
+    - cron: "58 0 * * *"   # 21:58 reserva
+    - cron: "21 2 * * *"   # 23:21 reserva
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+concurrency:
+  group: atividade-diaria
+  cancel-in-progress: false
+
+jobs:
+  registrar:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v5
+
+      - name: Registrar atividade
+        env:
+          GIT_NAME: ${{ secrets.GIT_NAME }}
+          GIT_EMAIL: ${{ secrets.GIT_EMAIL }}
+        run: |
+          if [ -z "$GIT_NAME" ] || [ -z "$GIT_EMAIL" ]; then
+            echo "Defina os secrets GIT_NAME e GIT_EMAIL no repositório."
+            exit 1
+          fi
+          export TZ=America/Sao_Paulo
+          HOJE=$(date +%Y-%m-%d)
+          AGORA=$((10#$(date +%H%M)))
+          ARQUIVO=.github/atividade.txt
+          git config user.name "$GIT_NAME"
+          git config user.email "$GIT_EMAIL"
+          git pull --rebase --quiet origin main
+          touch "$ARQUIVO"
+
+          TURNO=""
+          for SLOT in "0813 manhã" "1047 fim-da-manhã" "1329 início-da-tarde" "1611 tarde" "1937 noite"; do
+            HORA=${SLOT%% *}
+            NOME=${SLOT#* }
+            if [ "$AGORA" -ge "$((10#$HORA))" ] && ! grep -q "^$HOJE $NOME " "$ARQUIVO"; then
+              TURNO=$NOME
+              break
+            fi
+          done
+          if [ -z "$TURNO" ]; then
+            echo "Nenhum horário pendente agora ($(date +%H:%M)). Registros de hoje:"
+            grep "^$HOJE " "$ARQUIVO" || true
+            exit 0
+          fi
+
+          echo "$HOJE $TURNO $(date +%H:%M) (Brasília)" >> "$ARQUIVO"
+          tail -n 150 "$ARQUIVO" > "$ARQUIVO.tmp" && mv "$ARQUIVO.tmp" "$ARQUIVO"
+          git add "$ARQUIVO"
+          git commit -m "Atividade de $(date +%d/%m/%Y) ($(echo "$TURNO" | tr '-' ' '))"
+          for TENTATIVA in 1 2 3; do
+            if git push origin HEAD:main; then
+              echo "Registrado: $TURNO"
+              exit 0
+            fi
+            sleep $((TENTATIVA * 15))
+            git pull --rebase origin main
+          done
+          echo "Não foi possível enviar o commit depois de 3 tentativas."
+          exit 1

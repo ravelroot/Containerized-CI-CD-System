@@ -1,0 +1,53 @@
+{
+    "name": "ravelroot/vau",
+    "description": "Servidor de CI/CD em PHP: recebe webhooks do GitHub e do GitLab, clona o commit e roda testes e deploy em containers Docker isolados.",
+    "type": "project",
+    "license": "MIT",
+    "keywords": ["ci", "cd", "continuous-integration", "docker", "webhooks", "github", "gitlab", "php"],
+    "authors": [
+        {
+            "name": "Erik Pimenta"
+        }
+    ],
+    "require": {
+        "php": ">=8.2",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "ext-pdo": "*",
+        "ext-sodium": "*"
+    },
+    "require-dev": {
+        "friendsofphp/php-cs-fixer": "~3.64.0",
+        "phpstan/phpstan": "^2.0",
+        "phpunit/phpunit": "^11.4"
+    },
+    "suggest": {
+        "ext-pcntl": "Desligamento gracioso do worker e batimento durante builds longos",
+        "ext-pdo_sqlite": "Banco padrão (SQLite)",
+        "ext-pdo_mysql": "MySQL ou MariaDB",
+        "ext-pdo_pgsql": "PostgreSQL"
+    },
+    "autoload": {
+        "psr-4": {
+            "Vau\\": "src/"
+        }
+    },
+    "autoload-dev": {
+        "psr-4": {
+            "Vau\\Tests\\": "tests/"
+        }
+    },
+    "bin": ["bin/vau"],
+    "scripts": {
+        "test": "phpunit",
+        "analyse": "phpstan analyse --memory-limit=512M",
+        "lint": "php-cs-fixer fix --dry-run --diff",
+        "format": "php-cs-fixer fix",
+        "check": ["@lint", "@analyse", "@test"]
+    },
+    "config": {
+        "sort-packages": true,
+        "optimize-autoloader": true
+    }
+}

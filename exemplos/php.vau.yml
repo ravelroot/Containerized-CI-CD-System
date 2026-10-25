@@ -1,0 +1,24 @@
+# Projeto PHP com Composer, PHPStan e PHPUnit. Copie para a raiz do repositório como .vau.yml
+image: php:8.3-cli
+timeout: 20
+env:
+  COMPOSER_NO_INTERACTION: 1
+  APP_ENV: testing
+steps:
+  - name: Extensões e Composer
+    run: |
+      apt-get update -qq && apt-get install -y -qq git unzip > /dev/null
+      curl -sS https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
+  - name: Dependências
+    run: composer install --prefer-dist --no-progress
+  - name: Análise estática
+    run: vendor/bin/phpstan analyse --no-progress
+  - name: Testes
+    run: vendor/bin/phpunit
+deploy:
+  branches: [main]
+  image: alpine:3.20
+  run: |
+    apk add --no-cache openssh-client rsync > /dev/null
+    echo "$SSH_KEY" > /tmp/chave && chmod 600 /tmp/chave
+    rsync -az --delete -e "ssh -i /tmp/chave -o StrictHostKeyChecking=accept-new" ./ deploy@app.exemplo.com:/srv/app/
