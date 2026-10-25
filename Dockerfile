@@ -1,5 +1,5 @@
 # Vau · imagem única para o painel (Apache + PHP) e para o worker.
-FROM docker:27-cli AS docker-cli
+FROM docker:29-cli AS docker-cli
 
 FROM php:8.3-apache
 
