@@ -10,3 +10,4 @@
 2026-10-26 noite 20:05 (Brasília)
 2026-10-27 manhã 08:41 (Brasília)
 2026-10-27 fim-da-manhã 11:29 (Brasília)
+2026-10-27 início-da-tarde 14:17 (Brasília)
