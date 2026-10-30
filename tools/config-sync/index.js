@@ -275,4 +275,4 @@ if (cfg.push) {
 } else {
   console.log(`Para enviar: git push -u origin ${branch}`);
 }
-console.log('');
+console.log(''); 
